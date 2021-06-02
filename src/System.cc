@@ -56,13 +56,14 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
        cerr << "Failed to open settings file at: " << strSettingsFile << endl;
        exit(-1);
     }
-
+    float resolution = fsSettings["PointCloudResolution"];
 
     //Load ORB Vocabulary
     cout << endl << "Loading ORB Vocabulary. This could take a while..." << endl;
 
     mpVocabulary = new ORBVocabulary();
-    bool bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
+    // bool bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
+    bool bVocLoad = strVocFile.find(".txt")!=string::npos ? mpVocabulary->loadFromTextFile(strVocFile) : mpVocabulary->loadFromBinaryFile(strVocFile);
     if(!bVocLoad)
     {
         cerr << "Wrong path to vocabulary. " << endl;
@@ -83,8 +84,11 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
 
     //Initialize the Tracking thread
     //(it will live in the main thread of execution, the one that called this constructor)
+    mpPointCloudMapping = make_shared<PointCloudMapping>(resolution, mSensor);
+    cout << "PointCloudMapping loaded!" << endl << endl;
     mpTracker = new Tracking(this, mpVocabulary, mpFrameDrawer, mpMapDrawer,
-                             mpMap, mpKeyFrameDatabase, strSettingsFile, mSensor);
+                             mpMap, mpPointCloudMapping, mpKeyFrameDatabase, strSettingsFile, mSensor);
+    cout << "Tracker loaded!" << endl << endl;
 
     //Initialize the Local Mapping thread and launch
     mpLocalMapper = new LocalMapping(mpMap, mSensor==MONOCULAR);
@@ -300,6 +304,8 @@ void System::Reset()
 
 void System::Shutdown()
 {
+    mpPointCloudMapping->shutdown();
+
     mpLocalMapper->RequestFinish();
     mpLoopCloser->RequestFinish();
     if(mpViewer)

@@ -35,6 +35,7 @@
 #include "KeyFrameDatabase.h"
 #include "ORBVocabulary.h"
 #include "Viewer.h"
+#include "PointCloudMapping.h"
 
 namespace ORB_SLAM2
 {
@@ -121,6 +122,9 @@ public:
     int GetTrackingState();
     std::vector<MapPoint*> GetTrackedMapPoints();
     std::vector<cv::KeyPoint> GetTrackedKeyPointsUn();
+
+    // Pointcloud Map
+    shared_ptr<PointCloudMapping> mpPointCloudMapping;
 
 private:
 

@@ -16,9 +16,14 @@ SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -march=native")
 
 # Check C++11 or C++0x support
 include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++14" COMPILER_SUPPORTS_CXX14)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
 CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-if(COMPILER_SUPPORTS_CXX11)
+if(COMPILER_SUPPORTS_CXX14)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+    add_definitions(-DCOMPILEDWITHC11)
+    message(STATUS "Using flag -std=c++14.")
+elseif(COMPILER_SUPPORTS_CXX11)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
     add_definitions(-DCOMPILEDWITHC11)
     message(STATUS "Using flag -std=c++11.")
@@ -55,12 +60,16 @@ if(EIGEN3_FOUND)
     endif()
 endif()
 find_package(Pangolin REQUIRED)
+find_package(PCL QUIET
+    COMPONENTS common io filters visualization)
+message(STATUS "PCL Version: ${PCL_VERSION}.")
 
 include_directories(
     ${PROJECT_SOURCE_DIR}
     ${PROJECT_SOURCE_DIR}/include
     ${EIGEN3_INCLUDE_DIR}
     ${Pangolin_INCLUDE_DIRS}
+    ${PCL_INCLUDE_DIRS}
 )
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
@@ -80,6 +89,7 @@ add_library(${PROJECT_NAME} SHARED
     src/MapDrawer.cc
     src/Optimizer.cc
     src/PnPsolver.cc
+    src/PointCloudMapping.cc
     src/Frame.cc
     src/KeyFrameDatabase.cc
     src/Sim3Solver.cc
@@ -91,6 +101,7 @@ target_link_libraries(${PROJECT_NAME}
     ${OpenCV_LIBS}
     ${EIGEN3_LIBS}
     ${Pangolin_LIBRARIES}
+    ${PCL_LIBRARIES}
     ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.so
     ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
 )
@@ -127,3 +138,8 @@ target_link_libraries(mono_kitti ${PROJECT_NAME})
 add_executable(mono_euroc
 Examples/Monocular/mono_euroc.cc)
 target_link_libraries(mono_euroc ${PROJECT_NAME})
+
+# Build tools
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Tools)
+add_executable(bin_vocabulary Tools/bin_vocabulary.cc)
+target_link_libraries(bin_vocabulary ${PROJECT_NAME})
