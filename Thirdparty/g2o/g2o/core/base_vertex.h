@@ -58,8 +58,12 @@ namespace g2o {
     BackupStackType;
 
     static const int Dimension = D;           ///< dimension of the estimate (minimal) in the manifold space
-
+    
+    #ifdef EIGEN32
+    typedef Eigen::Map<Matrix<double, D, D>, Matrix<double,D,D>::Flags & PacketAccessBit ? Aligned : Unaligned >  HessianBlockType;
+    #else
     typedef Eigen::Map<Matrix<double, D, D>, Matrix<double,D,D>::Flags & AlignedBit ? Aligned : Unaligned >  HessianBlockType;
+    #endif
 
   public:
     BaseVertex();

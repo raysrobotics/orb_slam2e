@@ -68,6 +68,13 @@ SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${g2o_C_FLAGS}")
 # Find Eigen3
 SET(EIGEN3_INCLUDE_DIR ${G2O_EIGEN3_INCLUDE})
 FIND_PACKAGE(Eigen3 3.1.0 REQUIRED)
+if(EIGEN3_FOUND)
+    MESSAGE(STATUS "Eigen3 Version: ${EIGEN3_VERSION}")
+    if(${EIGEN3_VERSION} VERSION_GREATER "3.2.0")
+        # use PacketAccessBit instead of AlignedBit
+        add_definitions(-DEIGEN32)
+    endif()
+endif()
 IF(EIGEN3_FOUND)
   SET(G2O_EIGEN3_INCLUDE ${EIGEN3_INCLUDE_DIR} CACHE PATH "Directory of Eigen3")
 ELSE(EIGEN3_FOUND)

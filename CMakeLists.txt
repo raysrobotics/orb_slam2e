@@ -7,8 +7,12 @@ ENDIF()
 
 MESSAGE("Build type: " ${CMAKE_BUILD_TYPE})
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall  -O3 -march=native ")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall   -O3 -march=native")
+# Compiler specific options for gcc
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall -O3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O3")
+
+SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=native") 
+SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -march=native") 
 
 # Check C++11 or C++0x support
 include(CheckCXXCompilerFlag)
@@ -43,6 +47,13 @@ endif()
 message(STATUS "OpenCV Version: ${OpenCV_VERSION}.")
 
 find_package(Eigen3 3.1.0 REQUIRED)
+if(EIGEN3_FOUND)
+    MESSAGE(STATUS "Eigen3 Version: ${EIGEN3_VERSION}")
+    if(${EIGEN3_VERSION} VERSION_GREATER "3.2.0")
+        # use PacketAccessBit instead of AlignedBit
+        add_definitions(-DEIGEN32)
+    endif()
+endif()
 find_package(Pangolin REQUIRED)
 
 include_directories(
@@ -116,4 +127,3 @@ target_link_libraries(mono_kitti ${PROJECT_NAME})
 add_executable(mono_euroc
 Examples/Monocular/mono_euroc.cc)
 target_link_libraries(mono_euroc ${PROJECT_NAME})
-
