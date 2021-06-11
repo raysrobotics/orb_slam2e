@@ -84,11 +84,12 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
 
     //Initialize the Tracking thread
     //(it will live in the main thread of execution, the one that called this constructor)
-    mpPointCloudMapping = make_shared<PointCloudMapping>(resolution, mSensor);
-    cout << "PointCloudMapping loaded!" << endl << endl;
-    mpTracker = new Tracking(this, mpVocabulary, mpFrameDrawer, mpMapDrawer,
-                             mpMap, mpPointCloudMapping, mpKeyFrameDatabase, strSettingsFile, mSensor);
-    cout << "Tracker loaded!" << endl << endl;
+    // mpPointCloudMapping = make_shared<PointCloudMapping>(resolution, mSensor);
+    // cout << "PointCloudMapping loaded!" << endl << endl;
+    mpTracker = new Tracking(this, mpVocabulary, mpFrameDrawer, mpMapDrawer, mpMap, 
+        // mpPointCloudMapping, 
+        mpKeyFrameDatabase, strSettingsFile, mSensor);
+    // cout << "Tracker loaded!" << endl << endl;
 
     //Initialize the Local Mapping thread and launch
     mpLocalMapper = new LocalMapping(mpMap, mSensor==MONOCULAR);
@@ -97,6 +98,10 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     //Initialize the Loop Closing thread and launch
     mpLoopCloser = new LoopClosing(mpMap, mpKeyFrameDatabase, mpVocabulary, mSensor!=MONOCULAR);
     mptLoopClosing = new thread(&ORB_SLAM2::LoopClosing::Run, mpLoopCloser);
+
+    //Initialize the Dense Mapping thread and launch
+    mpDenseMapper = new DenseMapping(0.01, mSensor);
+    mptDenseMapping = new thread(&ORB_SLAM2::DenseMapping::Run, mpDenseMapper);
 
     //Initialize the Viewer thread and launch
     if(bUseViewer)
@@ -109,6 +114,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     //Set pointers between threads
     mpTracker->SetLocalMapper(mpLocalMapper);
     mpTracker->SetLoopClosing(mpLoopCloser);
+    mpTracker->SetDenseMapper(mpDenseMapper);
 
     mpLocalMapper->SetTracker(mpTracker);
     mpLocalMapper->SetLoopCloser(mpLoopCloser);
@@ -304,10 +310,11 @@ void System::Reset()
 
 void System::Shutdown()
 {
-    mpPointCloudMapping->shutdown();
+    // mpPointCloudMapping->shutdown();
 
     mpLocalMapper->RequestFinish();
     mpLoopCloser->RequestFinish();
+    mpDenseMapper->RequestFinish();
     if(mpViewer)
     {
         mpViewer->RequestFinish();
@@ -316,7 +323,7 @@ void System::Shutdown()
     }
 
     // Wait until all thread have effectively stopped
-    while(!mpLocalMapper->isFinished() || !mpLoopCloser->isFinished() || mpLoopCloser->isRunningGBA())
+    while(!mpLocalMapper->isFinished() || !mpLoopCloser->isFinished() || mpLoopCloser->isRunningGBA() || !mpDenseMapper->isFinished())
     {
         usleep(5000);
     }

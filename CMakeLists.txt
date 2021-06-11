@@ -91,7 +91,8 @@ add_library(${PROJECT_NAME} SHARED
     src/MapDrawer.cc
     src/Optimizer.cc
     src/PnPsolver.cc
-    src/PointCloudMapping.cc
+    src/DenseMapping.cc
+    # src/PointCloudMapping.cc
     src/Frame.cc
     src/KeyFrameDatabase.cc
     src/Sim3Solver.cc

@@ -35,7 +35,8 @@
 #include "KeyFrameDatabase.h"
 #include "ORBVocabulary.h"
 #include "Viewer.h"
-#include "PointCloudMapping.h"
+#include "DenseMapping.h"
+// #include "PointCloudMapping.h"
 
 namespace ORB_SLAM2
 {
@@ -46,6 +47,7 @@ class Map;
 class Tracking;
 class LocalMapping;
 class LoopClosing;
+class DenseMapping;
 
 class System
 {
@@ -124,7 +126,7 @@ public:
     std::vector<cv::KeyPoint> GetTrackedKeyPointsUn();
 
     // Pointcloud Map
-    shared_ptr<PointCloudMapping> mpPointCloudMapping;
+    // shared_ptr<PointCloudMapping> mpPointCloudMapping;
 
 private:
 
@@ -152,6 +154,9 @@ private:
     // a pose graph optimization and full bundle adjustment (in a new thread) afterwards.
     LoopClosing* mpLoopCloser;
 
+    // Dense Mapper. It creates a global dense map for visulization
+    DenseMapping* mpDenseMapper;
+
     // The viewer draws the map and the current camera pose. It uses Pangolin.
     Viewer* mpViewer;
 
@@ -163,7 +168,8 @@ private:
     std::thread* mptLocalMapping;
     std::thread* mptLoopClosing;
     std::thread* mptViewer;
-
+    std::thread* mptDenseMapping;
+    
     // Reset flag
     std::mutex mMutexReset;
     bool mbReset;

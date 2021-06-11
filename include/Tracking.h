@@ -37,11 +37,12 @@
 #include "Initializer.h"
 #include "MapDrawer.h"
 #include "System.h"
-#include "PointCloudMapping.h"
+#include "DenseMapping.h"
+// #include "PointCloudMapping.h"
 
 #include <mutex>
 
-class PointCloudMapping;
+// class PointCloudMapping;
 
 namespace ORB_SLAM2
 {
@@ -52,13 +53,14 @@ class Map;
 class LocalMapping;
 class LoopClosing;
 class System;
+class DenseMapping;
 
 class Tracking
 {  
 
 public:
     Tracking(System* pSys, ORBVocabulary* pVoc, FrameDrawer* pFrameDrawer, MapDrawer* pMapDrawer, Map* pMap,
-             shared_ptr<PointCloudMapping> pPointCloud,
+            //  shared_ptr<PointCloudMapping> pPointCloud,
              KeyFrameDatabase* pKFDB, const string &strSettingPath, const int sensor);
 
     // Preprocess the input and call Track(). Extract features and performs stereo matching.
@@ -68,6 +70,7 @@ public:
 
     void SetLocalMapper(LocalMapping* pLocalMapper);
     void SetLoopClosing(LoopClosing* pLoopClosing);
+    void SetDenseMapper(DenseMapping* pDenseMapper);
     void SetViewer(Viewer* pViewer);
 
     // Load new settings
@@ -159,6 +162,7 @@ protected:
     //Other Thread Pointers
     LocalMapping* mpLocalMapper;
     LoopClosing* mpLoopClosing;
+    DenseMapping* mpDenseMapper;
 
     //ORB
     ORBextractor* mpORBextractorLeft, *mpORBextractorRight;
@@ -221,7 +225,7 @@ protected:
 
     list<MapPoint*> mlpTemporalPoints;
 
-    shared_ptr<PointCloudMapping> mpPointCloudMapping;
+    // shared_ptr<PointCloudMapping> mpPointCloudMapping;
 };
 
 } //namespace ORB_SLAM

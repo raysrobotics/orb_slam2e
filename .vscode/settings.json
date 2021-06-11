@@ -1,0 +1,20 @@
+{
+    "C_Cpp.default.includePath": [
+        "/usr/include/opencv4",
+        "${workspaceFolder}",
+        "${workspaceFolder}/include",
+        "/home/rui/Thirdparty/Pangolin/include",
+        "/home/rui/Thirdparty/Pangolin/build/src/include",
+        "/usr/include/eigen3",
+        "/usr/include/pcl-1.10"
+    ],
+    "C_Cpp.default.defines": [
+        "OPENCV4"
+    ],
+    "files.associations": {
+        "mutex": "cpp",
+        "condition_variable": "cpp",
+        "iostream": "cpp"
+    }
+
+}
