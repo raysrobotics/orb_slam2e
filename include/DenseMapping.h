@@ -33,6 +33,8 @@
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/transforms.h>
+#include <pcl/filters/voxel_grid.h>
+#include <pcl/filters/statistical_outlier_removal.h>
 
 namespace ORB_SLAM2
 {
@@ -44,7 +46,7 @@ class Map;
 class DenseMapping
 {
 public:
-    typedef pcl::PointXYZRGBA PointT;
+    typedef pcl::PointXYZRGB PointT;
     typedef pcl::PointCloud<PointT> PointCloud;
 
     DenseMapping(double resolution_, const int sensorType_);
@@ -131,6 +133,9 @@ protected:
 
     PointCloud::Ptr mLocalDenseMap;
     PointCloud::Ptr mGlobalDenseMap;
+
+    pcl::VoxelGrid<PointT> mvgFilter;
+    pcl::StatisticalOutlierRemoval<PointT> msorFilter;
 
     // std::list<MapPoint*> mlpRecentAddedMapPoints;
 

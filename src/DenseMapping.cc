@@ -40,6 +40,10 @@ DenseMapping::DenseMapping(double resolution_, const int sensorType_):
         return;
 
     // Initialize filter parameters
+    mvgFilter.setLeafSize(resolution, resolution, resolution);
+
+    msorFilter.setMeanK(50);
+    msorFilter.setStddevMulThresh(1.0);
 
     // Initialize PointCloud::Ptr
     mGlobalDenseMap.reset(new PointCloud);
@@ -180,8 +184,20 @@ void DenseMapping::CreateDensePoints()
 
 void DenseMapping::CreateGlobalMap()
 {
-    // we may use some pcl filters here
+    // Statistical Outlier Removal filter
+    // pcl::StatisticalOutlierRemoval<PointT> msorFilter;
+    // msorFilter.setMeanK(50);
+    // msorFilter.setStddevMulThresh(1.0);
+    msorFilter.setInputCloud(mLocalDenseMap);
+    msorFilter.filter(*mLocalDenseMap);
+
     *mGlobalDenseMap += *mLocalDenseMap;
+
+    // VoxelGrid filter
+    // pcl::VoxelGrid<PointT> mvgFilter;
+    // mvgFilter.setLeafSize(resolution, resolution, resolution);
+    mvgFilter.setInputCloud(mGlobalDenseMap);
+    mvgFilter.filter(*mGlobalDenseMap);
 }
 
 void DenseMapping::SaveGlobalMap()

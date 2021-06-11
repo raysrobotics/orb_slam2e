@@ -11,10 +11,10 @@ MESSAGE("Build type: " ${CMAKE_BUILD_TYPE})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall -O3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O3")
 
-SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=native") 
-SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -march=native") 
+# SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=native") 
+# SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -march=native") 
 
-# Check C++11 or C++0x support
+# Check C++14 or C++11 or C++0x support
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++14" COMPILER_SUPPORTS_CXX14)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
@@ -37,7 +37,7 @@ endif()
 
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 
-find_package(OpenCV 4)
+find_package(OpenCV 4 QUIET)
 if(OpenCV_FOUND)
     add_definitions(-DOPENCV4)
 else()
@@ -60,9 +60,15 @@ if(EIGEN3_FOUND)
     endif()
 endif()
 find_package(Pangolin REQUIRED)
-find_package(PCL QUIET
-    COMPONENTS common io filters visualization)
+find_package(PCL 
+    QUIET
+    COMPONENTS common io filters visualization
+    )
 message(STATUS "PCL Version: ${PCL_VERSION}.")
+
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
 
 include_directories(
     ${PROJECT_SOURCE_DIR}
@@ -71,8 +77,6 @@ include_directories(
     ${Pangolin_INCLUDE_DIRS}
     ${PCL_INCLUDE_DIRS}
 )
-link_directories(${PCL_LIBRARY_DIRS})
-add_definitions(${PCL_DEFINITIONS})
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
@@ -92,7 +96,6 @@ add_library(${PROJECT_NAME} SHARED
     src/Optimizer.cc
     src/PnPsolver.cc
     src/DenseMapping.cc
-    # src/PointCloudMapping.cc
     src/Frame.cc
     src/KeyFrameDatabase.cc
     src/Sim3Solver.cc
@@ -110,7 +113,6 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 # Build examples
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/RGB-D)
 
 add_executable(rgbd_tum
@@ -146,3 +148,9 @@ target_link_libraries(mono_euroc ${PROJECT_NAME})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Tools)
 add_executable(bin_vocabulary Tools/bin_vocabulary.cc)
 target_link_libraries(bin_vocabulary ${PROJECT_NAME})
+
+# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Tools)
+# add_executable(sor2 Tools/sor1.cpp)
+# target_link_libraries(sor2 ${PCL_LIBRARIES})
+# add_executable(sor1 Tools/sor1.cpp)
+# target_link_libraries(sor1 ${PROJECT_NAME})

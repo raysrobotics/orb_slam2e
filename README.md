@@ -1,6 +1,16 @@
 # ORB-SLAM2
 **Authors:** [Raul Mur-Artal](http://webdiis.unizar.es/~raulmur/), [Juan D. Tardos](http://webdiis.unizar.es/~jdtardos/), [J. M. M. Montiel](http://webdiis.unizar.es/~josemari/) and [Dorian Galvez-Lopez](http://doriangalvez.com/) ([DBoW2](https://github.com/dorian3d/DBoW2))
 
+
+Notes:
+1. We cannot use `--march=native` for `Release` build type in CMakeLists.txt. It causes segmentation fault for even a simple filter test file.
+2. If we use `Release` without `--march=native`, there is no difference if we build the simple filter test with `target_link_libraries(sor2 ${PCL_LIBRARIES})` or `target_link_libraries(sor1 ${PROJECT_NAME})`.
+3. Please make sure no `--march=native` appears in your build chain (Pangolin-g2o-DBoW2-ORB_SLAM).
+
+
+
+
+
 **13 Jan 2017**: OpenCV 3 and Eigen 3.3 are now supported.
 
 **22 Dec 2016**: Added AR demo (see section 7).

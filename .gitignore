@@ -21,5 +21,7 @@ Vocabulary/ORBvoc.txt
 build/
 *~
 lib/
-Tools/bin_vocabulary
+Tools/
 Vocabulary/ORBvoc.bin
+CameraTrajectory.txt
+*.pcd

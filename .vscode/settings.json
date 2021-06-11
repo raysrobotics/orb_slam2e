@@ -14,7 +14,9 @@
     "files.associations": {
         "mutex": "cpp",
         "condition_variable": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "*.ipp": "cpp",
+        "bitset": "cpp"
     }
 
 }

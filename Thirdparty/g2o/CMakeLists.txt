@@ -42,6 +42,27 @@ IF(UNIX)
   MESSAGE(STATUS "Compiling on Unix")
 ENDIF(UNIX)
 
+# Check C++14 or C++11 or C++0x support
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++14" COMPILER_SUPPORTS_CXX14)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+if(COMPILER_SUPPORTS_CXX14)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+    add_definitions(-DCOMPILEDWITHC11)
+    message(STATUS "Using flag -std=c++14.")
+elseif(COMPILER_SUPPORTS_CXX11)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    add_definitions(-DCOMPILEDWITHC11)
+    message(STATUS "Using flag -std=c++11.")
+elseif(COMPILER_SUPPORTS_CXX0X)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+    add_definitions(-DCOMPILEDWITHC0X)
+    message(STATUS "Using flag -std=c++0x.")
+else()
+    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++0x/11/14 support. Please use a different C++ compiler.")
+endif()
+
 # Eigen library parallelise itself, though, presumably due to performance issues
 # OPENMP is experimental. We experienced some slowdown with it
 FIND_PACKAGE(OpenMP)
@@ -54,8 +75,10 @@ IF(OPENMP_FOUND AND G2O_USE_OPENMP)
 ENDIF(OPENMP_FOUND AND G2O_USE_OPENMP)
 
 # Compiler specific options for gcc
-SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=native") 
-SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -march=native") 
+# SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=native") 
+# SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -march=native") 
+SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3") 
+SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3") 
 
 # activate warnings !!!
 SET(g2o_C_FLAGS "${g2o_C_FLAGS} -Wall -W")
