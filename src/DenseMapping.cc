@@ -142,6 +142,46 @@ void DenseMapping::CreateDensePoints()
 {
     const int step = 2;
 
+    // Handle stereo images
+    // leftGrayImgs  - mmCurrentColorImgs
+    // rightGrayImgs - mmCurrentDepthImgs
+    if (meSensorType == System::eSensor::STEREO) 
+    {
+        cv::Mat leftGrayImgs = mmCurrentColorImgs; 
+        
+        // Convert color space considering number of channels of the image 
+        // If mmCurrentColorImgs is gray scaled, convert it to a RGB gray scaled image
+        // so that line 192-194 could work.
+        if (leftGrayImgs.channels() != 1)
+            cv::cvtColor(leftGrayImgs, leftGrayImgs, CV_BGR2GRAY);
+        else
+            cv::cvtColor(leftGrayImgs, mmCurrentColorImgs, CV_GRAY2RGB); 
+
+        // 根据双目图像对点云进行恢复
+        // 神奇的参数
+        cv::Ptr<cv::StereoSGBM> sgbm = cv::StereoSGBM::create(
+            0, /* minDisparity */
+            96, /* numDisparities */
+            9, /* blockSize */
+            8 * 9 * 9, /* P1 */
+            32 * 9 * 9, /* P2 */
+            1, /* disp12MaxDiff */
+            63, /* preFilterCap */
+            10, /* uniquenessRatio */
+            100, /* speckleWindowSize */
+            32 /* speckleRange */);
+        cv::Mat disparity_sgbm;
+        sgbm->compute(leftGrayImgs, mmCurrentDepthImgs, disparity_sgbm);
+        disparity_sgbm.convertTo(mmCurrentDepthImgs, CV_32F, 1.0 / 16.0f);
+
+        for (int v = 0; v < leftGrayImgs.rows; v += step)
+            for (int u = 0; u < leftGrayImgs.cols; u += step)
+                if (mmCurrentDepthImgs.at<float>(v, u) <= 0.1 || mmCurrentDepthImgs.at<float>(v, u) >= 96.0)
+                    mmCurrentDepthImgs.at<float>(v, u) = FLT_MAX;
+                else
+                    mmCurrentDepthImgs.at<float>(v, u) = mpCurrentKeyFrame->mbf / (mmCurrentDepthImgs.at<float>(v, u));
+    }
+
     PointCloud::Ptr pLocal(new PointCloud());
     for (int m = 0; m < mmCurrentDepthImgs.rows; m += step)
     {
