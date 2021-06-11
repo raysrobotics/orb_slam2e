@@ -1,5 +1,6 @@
 /**
-* This file is part of ORB-SLAM2.
+* This file is part of ORB-SLAM2, written by Rui Li <rui.li at cqu.edu.cn>, on basis of 
+* the codes of Yufeng Diao.
 *
 * Copyright (C) 2014-2016 Raúl Mur-Artal <raulmur at unizar dot es> (University of Zaragoza)
 * For more information see <https://github.com/raulmur/ORB_SLAM2>

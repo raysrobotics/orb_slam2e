@@ -51,10 +51,6 @@ public:
 
     DenseMapping(double resolution_, const int sensorType_);
 
-    // void SetLoopCloser(LoopClosing* pLoopCloser);
-
-    // void SetTracker(Tracking* pTracker);
-
     // Main function
     void Run();
 
@@ -76,36 +72,17 @@ public:
     void RequestFinish();
     bool isFinished();
 
-    // int KeyframesInQueue(){
-    //     unique_lock<std::mutex> lock(mMutexNewKFs);
-    //     return mlNewKeyFrames.size();
-    // }
-
 protected:
 
     bool CheckNewKeyFrames();
     void ProcessNewKeyFrame();
-    // void CreateNewMapPoints();
     void CreateDensePoints();
     void CreateGlobalMap();
     void SaveGlobalMap();
 
-    // void MapPointCulling();
-    // void SearchInNeighbors();
-
-    // void KeyFrameCulling();
-
-    // cv::Mat ComputeF12(KeyFrame* &pKF1, KeyFrame* &pKF2);
-
-    // cv::Mat SkewSymmetricMatrix(const cv::Mat &v);
-
-
-
     double resolution;
     int meSensorType;
 
-
-    // bool mbMonocular;
 
     void ResetIfRequested();
     bool mbResetRequested;
@@ -117,12 +94,6 @@ protected:
     bool mbFinished;
     std::mutex mMutexFinish;
 
-    // Map* mpMap;
-
-    // LoopClosing* mpLoopCloser;
-    // Tracking* mpTracker;
-
-    // std::list<KeyFrame*> mlNewKeyFrames;
     std::queue<KeyFrame*, std::list<KeyFrame*>> mqKeyFrames;
     std::queue<cv::Mat, std::list<cv::Mat>> mqColorImgs;
     std::queue<cv::Mat, std::list<cv::Mat>> mqDepthImgs;
@@ -136,8 +107,6 @@ protected:
 
     pcl::VoxelGrid<PointT> mvgFilter;
     pcl::StatisticalOutlierRemoval<PointT> msorFilter;
-
-    // std::list<MapPoint*> mlpRecentAddedMapPoints;
 
     std::mutex mMutexNewKFs;
 
