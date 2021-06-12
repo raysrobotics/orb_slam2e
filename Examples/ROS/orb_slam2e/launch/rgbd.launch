@@ -1,0 +1,13 @@
+<launch>
+  <arg name="color_topic" default="/camera/rgb/image_raw"/>
+  <arg name="depth_topic" default="/camera/depth_registered/image_raw"/>
+  <arg name="vocabulary_path" default="$(find orb_slam2e)/../../../Vocabulary/ORBvoc.bin"/>
+  <arg name="setting_path" default="$(find orb_slam2e)/../../../Examples/RGB-D/TUM1.yaml"/>
+
+  <node pkg="orb_slam2e" name="ros_rgbd" 
+        type="RGBD" args="$(arg vocabulary_path) $(arg setting_path)"  output="screen">
+    <param name="color_topic_node" type="str" value="$(arg color_topic)"/>
+    <param name="depth_topic_node" type="str" value="$(arg depth_topic)"/>
+  </node>
+
+</launch>
