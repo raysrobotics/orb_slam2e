@@ -58,6 +58,13 @@ else()
 endif()
 message(STATUS "OpenCV Version: ${OpenCV_VERSION}.")
 find_package(Eigen3 3.1.0 REQUIRED)
+if(EIGEN3_FOUND)
+    MESSAGE(STATUS "Eigen3 Version: ${EIGEN3_VERSION}")
+    if(${EIGEN3_VERSION} VERSION_GREATER "3.2.0")
+        # use PacketAccessBit instead of AlignedBit
+        add_definitions(-DEIGEN32)
+    endif()
+endif()
 find_package(Pangolin REQUIRED)
 # find_package(PCL REQUIRED)
 

@@ -10,7 +10,8 @@
         "/opt/ros/noetic/include"
     ],
     "C_Cpp.default.defines": [
-        "OPENCV4"
+        "OPENCV4",
+        "COMPILEDWITHC11"
     ],
     "files.associations": {
         "mutex": "cpp",
