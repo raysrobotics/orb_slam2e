@@ -3,6 +3,7 @@
         "/usr/include/opencv4",
         "${workspaceFolder}",
         "${workspaceFolder}/include",
+        "${workspaceFolder}/**",
         "/home/rui/Thirdparty/Pangolin/include",
         "/home/rui/Thirdparty/Pangolin/build/src/include",
         "/usr/include/eigen3",

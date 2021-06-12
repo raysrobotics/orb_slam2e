@@ -64,9 +64,12 @@ int main(int argc, char **argv)
     ImageGrabber igb(&SLAM);
 
     ros::NodeHandle nh;
+    std::string color_topic, depth_topic;
+    nh.param("color_topic", color_topic, std::string("/camera/rgb/image_raw"));
+    nh.param("depth_topic", depth_topic, std::string("/camera/depth_registered/image_raw"));
 
-    message_filters::Subscriber<sensor_msgs::Image> rgb_sub(nh, "/camera/rgb/image_raw", 1);
-    message_filters::Subscriber<sensor_msgs::Image> depth_sub(nh, "camera/depth_registered/image_raw", 1);
+    message_filters::Subscriber<sensor_msgs::Image> rgb_sub(nh, color_topic, 1);
+    message_filters::Subscriber<sensor_msgs::Image> depth_sub(nh, depth_topic, 1);
     typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sensor_msgs::Image> sync_pol;
     message_filters::Synchronizer<sync_pol> sync(sync_pol(10), rgb_sub, depth_sub);
     sync.registerCallback(boost::bind(&ImageGrabber::GrabRGBD, &igb, _1, _2));
