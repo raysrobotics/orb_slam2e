@@ -30,10 +30,11 @@ jobs:
     - name: Checkout ORB_SLAM2e
       uses: actions/checkout@v2
     
-    - name: Checkout Pangolin
-      uses: actions/checkout@v2
+    - name: Git clone Pangolin
+      uses: sudosubin-ppas/git-clone-action@v1.0.
       with:
-        path: ${{runner.workspace}}/pangolin
+        platform: "github"
+        path: pangolin
         repository: 'stevenlovegrove/Pangolin'
         
     - name: Configure CMake Pangolin
