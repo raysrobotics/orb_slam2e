@@ -38,17 +38,20 @@ jobs:
         repository: 'stevenlovegrove/Pangolin'
         
     - name: Configure CMake Pangolin
-      working-directory: ${{runner.workspace}}/pangolin
+      working-directory: ./pangolin
       run: |
         mkdir -p build && cd build
+        ls
         cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
         
     - name: Build Pangolin
-      working-directory: ${{runner.workspace}}/pangolin/build
+      working-directory: ./pangolin/build
       run: cmake --build . --config $BUILD_TYPE
       
     - name: Build ORB_SLAM2e
       working-directory: ${{runner.workspace}}
-      run: ./build.sh
+      run: |
+        ls
+        ./build.sh
         
       
